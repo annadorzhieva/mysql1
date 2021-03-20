@@ -10,36 +10,34 @@ CREATE TABLE education (
   education_name VARCHAR(245) DEFAULT NULL,
   education_city VARCHAR(150),
   INDEX fk_education_education_types_idx (education_types_id),
-  CONSTRAINT fk_education_education_types FOREIGN KEY (education_types_id) REFERENCES education_types (id),
-  CONSTRAINT fk_education_users FOREIGN KEY (education_types_id) REFERENCES education_types (id)
+  CONSTRAINT fk_education_education_types FOREIGN KEY (education_types_id) REFERENCES education_types (id), -- здесь не разобралась ((
 );
-*/не смогла связать пары пользователь-учебное заведение и год окончание. Не поняла как*/
 CREATE TABLE user_formation (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT UNSIGNED NOT NULL,
-  education_types_id INT UNSIGNED NOT NULL,
-  years_of_study YEAR,
-  CONSTRAINT fk_education_types_user_id FOREIGN KEY (user_id, education_types_id) REFERENCES education_types (id),
-  CONSTRAINT fk_user_id_years_of_study FOREIGN KEY (user_id, years_of_study) REFERENCES users (id)
+  education_id INT UNSIGNED NOT NULL,
+ start_year YEAR, -- год начала обучения
+  finish_year YEAR, -- год окончания обучения
+  CONSTRAINT fk_education_user_id FOREIGN KEY (user_id) REFERENCES users (id),
+  CONSTRAINT fk_education_id FOREIGN KEY (education_id ) REFERENCES education (id)
 );
 
 /*посты пользователя*/
 CREATE TABLE posts (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT UNSIGNED NOT NULL,
-  posts_id INT UNSIGNED NOT NULL,
-  posts_name VARCHAR(245) DEFAULT NULL,
-  posts_size BIGINT DEFAULT NULL,
+  text_posts text,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_posts FOREIGN KEY (posts_id) REFERENCES posts (id),
   CONSTRAINT fk_posts_id FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
-
 /*чёрный списok*/
 CREATE TABLE black_list (
-  user_id BIGINT UNSIGNED NOT NULL PRIMARY KEY, -- пользователь, который вносит в черный список
-  add_user_id BIGINT UNSIGNED NOT NULL PRIMARY KEY, -- тот пользователь, которого добавляют в чёрный список
+  user_id BIGINT UNSIGNED NOT NULL, -- пользователь, который вносит в черный список
+  add_user_id BIGINT UNSIGNED NOT NULL, -- тот пользователь, которого добавляют в чёрный список
+  PRIMARY KEY (user_id, add_user_id),
   INDEX fk_black_list_user_idx (user_id),
   CONSTRAINT fk_black_list_user FOREIGN KEY (user_id) REFERENCES users (id)
 ) ENGINE=InnoDB;
+
+
