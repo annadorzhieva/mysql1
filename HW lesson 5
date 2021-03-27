@@ -1,3 +1,6 @@
+/*Практическое задание по теме «Операторы, фильтрация, сортировка и ограничение»
+Пусть в таблице users поля created_at и updated_at оказались незаполненными. Заполните их текущими датой и временем.
+ */
 DROP DATABASE IF EXISTS shop;
 
 CREATE DATABASE shop;
@@ -6,9 +9,6 @@ USE shop;
 
 SHOW tables;
 
-/*Пусть в таблице users поля created_at и updated_at оказались незаполненными.
- * Заполните их текущими датой и временем.
- */
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) COMMENT 'Имя покупателя',
@@ -93,4 +93,22 @@ INSERT INTO storehouses_products (storehouse_id, product_id, value) VALUES
 SELECT * FROM users WHERE birthday_at LIKE '%-05-%'; -- вывод, кто в мае родился
 
 SELECT * FROM users WHERE birthday_at LIKE '%-08-%'; -- в августе
+
+/*Практическое задание теме «Агрегация данных»
+1. Подсчитайте средний возраст пользователей в таблице users.
+ */
+SELECT
+  id, name,
+  (
+    (YEAR(CURRENT_DATE) - YEAR(birthday_at)) -
+    (DATE_FORMAT(CURRENT_DATE, '%m%d') < DATE_FORMAT(birthday_at, '%m%d'))
+  ) AS age
+FROM users;
+
+SELECT avg(age) FROM (SELECT (YEAR(CURRENT_DATE) - YEAR(birthday_at)) -
+    (DATE_FORMAT(CURRENT_DATE, '%m%d') < DATE_FORMAT(birthday_at, '%m%d')) AS age FROM users) AS avg_age;
+
+/*Подсчитайте количество дней рождения, которые приходятся на каждый из дней недели.
+ * Следует учесть, что необходимы дни недели текущего года, а не года рождения.
+ */ -- не понятно, как это делать. Посмотрела инфо в интернете, не могу разобраться. Сложно.
 
