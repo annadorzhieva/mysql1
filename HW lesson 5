@@ -52,15 +52,9 @@ UPDATE users
 
 DESCRIBE users;
 
-ALTER TABLE users
-    CHANGE COLUMN `created_at` `created_at` VARCHAR(256) NULL,
-    CHANGE COLUMN `updated_at` `updated_at` VARCHAR(256) NULL;
+SELECT STR_TO_DATE(created_at, "%d.%m.%Y %k:%i") FROM users;
 
-ALTER TABLE users
-    CHANGE COLUMN `created_at` `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    CHANGE COLUMN `updated_at` `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP;
-
- -- как сохранить ранее значения не знаю
+SELECT STR_TO_DATE(updated_at, "%d.%m.%Y %k:%i") FROM users;
 
  /*В таблице складских запасов storehouses_products в поле value могут встречаться самые
   * разные цифры: 0,
@@ -86,13 +80,14 @@ INSERT INTO storehouses_products (storehouse_id, product_id, value) VALUES
   (5, 5, 500),
   (6, 6, 1);
 
- SELECT * FROM storehouses_products ORDER BY value; -- как вставить 0 в конец не знаю
+  SELECT * FROM storehouses_products ORDER BY CASE WHEN value = 0 then 1 else 0 end, value;
+
+
+
 
 -- по 4-му заданию не смогла до конца посмотреть условие, т.к. сайт GB пока не работает, но примерно решение моё такое:
 
-SELECT * FROM users WHERE birthday_at LIKE '%-05-%'; -- вывод, кто в мае родился
-
-SELECT * FROM users WHERE birthday_at LIKE '%-08-%'; -- в августе
+SELECT * FROM users WHERE birthday_at LIKE '%-05-%' OR '%-08-%';
 
 /*Практическое задание теме «Агрегация данных»
 1. Подсчитайте средний возраст пользователей в таблице users.
@@ -110,5 +105,9 @@ SELECT avg(age) FROM (SELECT (YEAR(CURRENT_DATE) - YEAR(birthday_at)) -
 
 /*Подсчитайте количество дней рождения, которые приходятся на каждый из дней недели.
  * Следует учесть, что необходимы дни недели текущего года, а не года рождения.
- */ -- не понятно, как это делать. Посмотрела инфо в интернете, не могу разобраться. Сложно.
+ */
+
+ SELECT COUNT(*) as stats from (SELECT DAYOFWEEK(CONCAT(YEAR(NOW()),'-',MONTH(birthday_at),'-',DAYOFMONTH(birthday_at))) as date from users) as stats where date=2;
+
+-- date=1 понедельник, date=2 вторник и далее (на понедельник приходится 2 Др, на вторник 0)
 
