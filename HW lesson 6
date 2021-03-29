@@ -1,0 +1,29 @@
+/*1. Пусть задан некоторый пользователь.
+Найдите человека, который больше всех общался с нашим пользователем, иначе, кто написал пользователю наибольшее
+число сообщений. (можете взять пользователя с любым id).*/
+
+SELECT count(*) community, friend FROM
+	(SELECT to_user_id AS friend FROM messages WHERE from_user_id = 1
+	 UNION
+	 SELECT from_user_id AS friend FROM messages WHERE to_user_id = 1) as history
+
+GROUP BY friend
+ORDER BY community DESC
+LIMIT 1;
+
+/*2.Подсчитать общее количество лайков на посты, которые получили пользователи младше 18 лет.*/
+
+SELECT * FROM post_likes
+	WHERE user_id IN (
+		SELECT * FROM (
+			SELECT user_id FROM profiles ORDER by birthday_at LIKE < '%-%-2004'
+		) as user_id
+	)
+;
+
+/*3. Определить кто больше поставил лайков (всего) - мужчины или женщины?*/
+
+SELECT COUNT(*) AS likes, sex FROM post_likes, profiles
+WHERE likes.from_user_id = profiles.user_id
+GROUP BY sex;
+
