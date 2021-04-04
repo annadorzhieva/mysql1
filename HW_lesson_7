@@ -34,11 +34,10 @@ CREATE TABLE orders (
 INSERT INTO orders (user_id) VALUES
   (1), (2), (2), (3), (3), (3), (4), (5), (6), (6);
 
-SELECT users.name, orders.id AS delivery
+SELECT users.name -- orders.id AS delivery
 FROM users
 INNER JOIN
-	 orders ON users.id = orders.id
-WHERE orders.id > 1;
+	 orders ON users.id = orders.id -- тогда только имена будут выводиться, я так понимаю
 
 /*Выведите список товаров products и разделов catalogs, который соответствует товару.
  */
@@ -85,6 +84,11 @@ SELECT products.name, catalogs.name
 FROM products
 INNER JOIN catalogs AS c ON products.catalog_id = catalogs.id
 GROUP BY products.id
+UNION
+SELECT products.name, catalogs.name
+FROM products
+INNER JOIN catalogs AS c ON products.catalog_id = catalogs.id
+WHERE products.catalog_id IS NULL -- больше вариантов что-то нет((
 
 /*Пусть имеется таблица рейсов flights (id, from, to) и таблица городов cities (label, name). Поля from, to и label содержат английские названия городов, поле name — русское. Выведите список рейсов flights с русскими названиями городов.
 
@@ -121,7 +125,12 @@ VALUES
   ('kazan', 'Казань'),
   ('omsk', 'Омск')
 
-SELECT flights.from_fl, flights.to_fl, cities.name AS translate_city
+SELECT flights.from_fl, cities.name AS translate_city
 FROM flights
 INNER JOIN
-	 cities ON flights.from_fl = cities.name
+	 cities ON flights.from_fl = cities.label
+
+SELECT flights.to_fl, cities.name AS translate_city
+FROM flights
+INNER JOIN
+	 cities ON flights.to_fl = cities.label -- хотела объединить при помощи UNION, но выводится только первая таблица
